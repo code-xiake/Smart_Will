@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+    <title>Beneficiary interface</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.4.umd.min.js" type="text/javascript"></script>
+
+   <head><h2>congrats!!!!!!!, you are now a beneficiary</h2></head> <br>
+
+    <body>
+    <h3>click the button to check the status of your loved one</h3>
+
+      <button onclick="checkLastAlive()">Check Last Alive</button>
+      <div id="messageDiv"></div>
+      
+
+
+      <button onclick="provider.send('eth_requestAccounts', []).then(() => {
+		provider.listAccounts().then((accounts) => {
+		  signer = provider.getSigner(accounts[0]);
+		  document.getElementById('wallet-address').innerHTML = accounts[0];
+		});
+	  });">owner address</button>
+	  <div id="wallet-address"></div>
+
+
+
+    </body>
+
+    <style>
+        body {
+             background-color: deepskyblue;
+             font-size:35px;
+             text-align: center;
+            }
+         button {
+             background-color: rgb(23, 243, 41);
+             font-size: 45px;
+             }
+         button:hover {
+            background-color: rgb(248, 13, 158);
+             }
+    </style>
+
+
+      <script> // Initialize web3
+       var provider = new ethers.providers.Web3Provider(window.ethereum, "goerli");
+var contractAddress = "0x2911DAE5d317f5e406386Ef0A4C73D65DDeA9470";
+var abi = 
+[
+	{
+		"inputs": [],
+		"stateMutability": "payable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "alive",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "automaticDistribution",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "beneficiaries",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "beneficiaryList",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "destroy",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getLastAlive",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastAlive",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_beneficiary",
+				"type": "address"
+			}
+		],
+		"name": "removeBeneficiary",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_beneficiary",
+				"type": "address"
+			}
+		],
+		"name": "setBeneficiary",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	}
+]
+
+
+var SmartWill;
+var signer;
+
+
+provider.send("eth_requestAccounts", []).then(() => {
+      provider.listAccounts().then((accounts) => {
+        signer = provider.getSigner(accounts[0]);
+        SmartContract = new ethers.Contract(
+          contractAddress,
+          abi,
+          signer
+    );
+  });
+});
+
+
+async function checkLastAlive() {
+        const contractWithSigner = new ethers.Contract(contractAddress, abi, signer);
+
+        try {
+          const result = await contractWithSigner.getLastAlive();
+          const lastAliveDate = new Date(result * 1000);
+
+          if (lastAliveDate > Date.now()) {
+            const message = "Last alive timestamp has not elapsed. Owner still alive.";
+            console.log(message);
+            displayMessage(message);
+            const lastAliveTimestamp = document.getElementById("lastAliveTimestamp");
+            lastAliveTimestamp.innerHTML = `Last alive timestamp: ${lastAliveDate.toString()}`;
+          } else {
+            const tx = await contractWithSigner.transferFunds();
+            const message = "Owner is not available, funds transferred.";
+            console.log(message);
+            displayMessage(message);
+          }
+        } catch (error) {
+          if (error && error.code === -32603) {
+            const message = `Error message: ${error.data.message}`;
+            console.log(message);
+            displayMessage(message);
+          } else {
+            const message = "Only beneficiary can call this function.";
+            console.log(message);
+            displayMessage(message);
+          }
+        }
+      }
+
+      function displayMessage(message) {
+        const messageDiv = document.getElementById("messageDiv");
+        const messageElement = document.createElement("p");
+
+        if (typeof message === 'string') {
+          messageElement.innerText = message;
+        } else {
+          messageElement.innerText = message.message;
+        }
+
+        messageDiv.appendChild(messageElement);
+      }
+
+
+  </script>
+</html>
