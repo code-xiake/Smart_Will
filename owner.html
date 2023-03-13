@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Smart Will oner interface</title>
+  </head>
+  <h1>Smart Will</h1>
+  <h2>protect your loved ones, when you are no longer here, let your will be with them</h2>
+
+  <script src="https://cdn.ethers.io/lib/ethers-5.4.umd.min.js" type="text/javascript"></script> 
+  <body>
+
+<button onclick="getBalance()">Get Balance</button>
+     <br><br>
+     <div id="balance"></div>
+     <br><br>
+
+
+
+<button id="aliveButton">Alive</button> <br><br>
+
+     <button onclick="automaticDistribution()">Call automaticDistribution</button>
+     <div id="result"></div><br>
+
+
+    
+<button onclick="removeBeneficiary()">Remove Beneficiary</button>
+     <input type="text" id="beneficiaryAddressInput" placeholder="Enter beneficiary address">
+     <div id="removeBeneficiaryMessage"></div><br><br>
+
+
+
+
+	   
+
+<button onclick="setBeneficiary()">Set beneficiary</button>
+     <input type="text" id="beneficiaries" placeholder = "enter beneficiary address" >
+     <p id="beneficiary_message"></p>
+    
+
+   
+	
+
+<button onclick="provider.send('eth_requestAccounts', []).then(() => {
+		provider.listAccounts().then((accounts) => {
+		  signer = provider.getSigner(accounts[0]);
+		  document.getElementById('wallet-address').innerHTML = accounts[0];
+		});
+	  });">owner address</button>
+	  <div id="wallet-address"></div>
+
+  </body>
+
+
+ <style>
+	body {
+		 background-color: deepskyblue;
+		 font-size:35px;
+		 text-align: center;
+		}
+	 button {
+		 background-color: rgb(23, 243, 41);
+		 font-size: 45px;
+		 }
+	 button:hover {
+		background-color: rgb(248, 13, 158);
+		 }
+</style>
+
+
+    <script>
+
+    // Initialize web3
+	  var provider = new ethers.providers.Web3Provider(window.ethereum, "goerli");
+      
+
+	  var contractAddress = "0x2911DAE5d317f5e406386Ef0A4C73D65DDeA9470";
+      var abi = [
+	{
+		"inputs": [],
+		"name": "alive",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "automaticDistribution",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "destroy",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getLastAlive",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_beneficiary",
+				"type": "address"
+			}
+		],
+		"name": "removeBeneficiary",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_beneficiary",
+				"type": "address"
+			}
+		],
+		"name": "setBeneficiary",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "payable",
+		"type": "constructor"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "beneficiaries",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "beneficiaryList",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastAlive",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
+      var SmartWill;
+	  var signer;
+     
+	provider.send("eth_requestAccounts", []).then(() => {
+      provider.listAccounts().then((accounts) => {
+        signer = provider.getSigner(accounts[0]);
+        SmartContract = new ethers.Contract(
+          contractAddress,
+          abi,
+          signer
+    );
+  });
+});
+
+
+      // Initialize the contract object
+      const contract = new ethers.Contract(contractAddress, abi, provider);
+
+	 
+async function getBalance() {
+   
+  const balance = await contract.getBalance();
+  const balanceElement = document.getElementById("balance");
+  balanceElement.innerHTML = `Contract Balance: ${balance.toString()}`;
+}
+
+      // Define the functions that will be called when the buttons are clicked
+      
+
+// Define the alive function
+async function alive() {
+  try {
+	const contractWithSigner = new ethers.Contract(contractAddress, abi, signer);
+    // Call alive function using contractWithSigner
+    const result = await contractWithSigner.alive();
+
+    // Handle result
+    console.log(result);
+  } catch (err) {
+    // Handle error
+    console.error(err);
+  }
+}
+
+// Attach the alive function to the button click event
+const aliveButton = document.getElementById('aliveButton');
+aliveButton.addEventListener('click', alive);
+
+      
+
+
+
+// function to call the automaticDistribution function
+async function automaticDistribution() {
+            try {
+                const contractWithSigner = new ethers.Contract(contractAddress, abi, signer);
+                const result = await contractWithSigner.automaticDistribution();
+                console.log(result);
+                document.getElementById("result").innerText = "Successful";
+            } catch (error) {
+                console.error(error);
+                document.getElementById("result").innerText = "Insufficient balance";
+            }
+        }
+
+
+      
+
+
+
+      async function removeBeneficiary() {
+    // Retrieve beneficiary address from input field
+    const beneficiaryAddress = document.getElementById("beneficiaryAddressInput").value;
+    
+    // Create contract instance with signer
+    const contractWithSigner = new ethers.Contract(contractAddress, abi, signer);
+    
+    // Call removeBeneficiary method
+    const tx = await contractWithSigner.removeBeneficiary(beneficiaryAddress);
+    
+    // Wait for transaction to be confirmed
+    await tx.wait();
+    
+    // Display success message
+    const successMessage = `Beneficiary ${beneficiaryAddress} has been removed.`;
+    document.getElementById("removeBeneficiaryMessage").innerHTML = successMessage;
+}
+
+
+	  
+	  async function setBeneficiary() {
+         const beneficiaryAddress = document.getElementById("beneficiaries").value;
+         const signer = provider.getSigner();
+         const contractWithSigner = new ethers.Contract(contractAddress, abi, signer);
+         const tx = await contractWithSigner.setBeneficiary(beneficiaryAddress);
+         await tx.wait();
+         const message = `beneficiary address: ${beneficiaryAddress}`;
+         document.getElementById("beneficiary_message").innerHTML = message;
+     }
+
+	  
+     
+    </script>
+  
+</html>
