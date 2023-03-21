@@ -6,3 +6,6 @@ the owner interface has full access to the will that allows the user to check ac
 the alive function updates the timestamp of the contract, if the alive stamp has not been update for a full year, the contract interpretes as the owner is dead, and would automatically disburse the funds in the contract to all beneficiaries when any of them clicks the get lastalive function on the beneficiary interface
 
 the beneficiary interface has only limited access, which includes the get last alive function which allows the beneficiary to know if the owner is still alive and automatically transfers funds to all beneficiary if owner has not been active for a full year.
+
+
+the html code for the beneficiary page can be found on; https://github.com/code-xiake/smart_will2 i decided to split it, because i was having trouble uploading the full repo on vercel.
