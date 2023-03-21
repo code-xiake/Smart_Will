@@ -7,5 +7,13 @@ the alive function updates the timestamp of the contract, if the alive stamp has
 
 the beneficiary interface has only limited access, which includes the get last alive function which allows the beneficiary to know if the owner is still alive and automatically transfers funds to all beneficiary if owner has not been active for a full year.
 
-
+#Note
 the html code for the beneficiary page can be found on; https://github.com/code-xiake/smart_will2 i decided to split it, because i was having trouble uploading the full repo on vercel.
+there are also two seperate front ends, because i didnt want the benefiaciary to get access to the owner functions, even though all transactions will revert if mgs.sender is not owner
+in the original deployed contract there is a self destruct function but after deploy the contract i decided not to include that function on the frnt end, because i didnt want it to be mistakenly clicked.thanks
+
+
+deployment details;
+contract address;0x2911DAE5d317f5e406386Ef0A4C73D65DDeA9470 
+live site for owner;https://smart-will-code-xiake.vercel.app/
+live site for beneficiary; https://smart-will2.vercel.app/
