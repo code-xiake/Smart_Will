@@ -14,6 +14,9 @@ in the original deployed contract there is a self destruct function but after de
 
 
 deployment details;
-contract address;0x2911DAE5d317f5e406386Ef0A4C73D65DDeA9470 
+contract address;0xCA24c7a01095A698Ae3679F5c78e9e656F18f170 
 live site for owner;https://smart-will-code-xiake.vercel.app/
 live site for beneficiary; https://smart-will2.vercel.app/
+
+note to grader; the contract was deployed with the graders test address on goerli as the owner, if said address is wrong, kindly reach out before grading.
+graders address; 0xa1B94ef0f24d7F4fd02285EFcb9202E6C6EC655B
