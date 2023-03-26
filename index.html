@@ -13,11 +13,13 @@
 <button onclick="getBalance()">Get Balance</button>
      <br><br>
      <div id="balance"></div>
-     <br><br>
+     
 
 
 
-<button id="aliveButton">Alive</button> <br><br>
+	 <button id="aliveButton">Alive</button>
+     <div id="result"></div>
+     <div id="error"></div>
 
      <button onclick="automaticDistribution()">Call automaticDistribution</button>
      <div id="result"></div><br>
@@ -26,18 +28,20 @@
     
 <button onclick="removeBeneficiary()">Remove Beneficiary</button>
      <input type="text" id="beneficiaryAddressInput" placeholder="Enter beneficiary address">
-     <div id="removeBeneficiaryMessage"></div><br><br>
+     <div id="removeBeneficiaryMessage"></div><br>
 
-
-
-
-	   
+   
 
 <button onclick="setBeneficiary()">Set beneficiary</button>
      <input type="text" id="beneficiaries" placeholder = "enter beneficiary address" >
      <p id="beneficiary_message"></p>
     
 
+	 <button onclick="displayAddress()">owner address</button>
+	 <p id="address"></p>
+
+	 <button onclick = "SmartWillAddress()">contract Address</button>
+     <p id = "CtrtAddress"></p>
    
 	
 
@@ -46,7 +50,7 @@
 		  signer = provider.getSigner(accounts[0]);
 		  document.getElementById('wallet-address').innerHTML = accounts[0];
 		});
-	  });">owner address</button>
+	  });">current user</button>
 	  <div id="wallet-address"></div>
 
   </body>
@@ -54,13 +58,13 @@
 
  <style>
 	body {
-		 background-color: deepskyblue;
+		 background-color: brown;
 		 font-size:35px;
 		 text-align: center;
 		}
 	 button {
 		 background-color: rgb(23, 243, 41);
-		 font-size: 45px;
+		 font-size: 25px;
 		 }
 	 button:hover {
 		background-color: rgb(248, 13, 158);
@@ -74,7 +78,7 @@
 	  var provider = new ethers.providers.Web3Provider(window.ethereum, "goerli");
       
 
-	  var contractAddress = "0x2911DAE5d317f5e406386Ef0A4C73D65DDeA9470";
+	  var contractAddress = "0xCA24c7a01095A698Ae3679F5c78e9e656F18f170";
       var abi = [
 	{
 		"inputs": [],
@@ -237,11 +241,12 @@
 
 	 
 async function getBalance() {
-   
   const balance = await contract.getBalance();
+  const balanceInEther = balance / 1e18;
   const balanceElement = document.getElementById("balance");
-  balanceElement.innerHTML = `Contract Balance: ${balance.toString()}`;
+  balanceElement.innerHTML = `Contract Balance: ${balanceInEther.toString()} ETH`;
 }
+
 
       // Define the functions that will be called when the buttons are clicked
       
@@ -249,15 +254,17 @@ async function getBalance() {
 // Define the alive function
 async function alive() {
   try {
-	const contractWithSigner = new ethers.Contract(contractAddress, abi, signer);
+    const contractWithSigner = new ethers.Contract(contractAddress, abi, signer);
     // Call alive function using contractWithSigner
     const result = await contractWithSigner.alive();
 
-    // Handle result
-    console.log(result);
+    // Display the result on the browser
+    const resultElement = document.getElementById("result");
+    resultElement.innerHTML = `time updated,timesamp hash: ${result.hash}`;
   } catch (err) {
     // Handle error
-    console.error(err);
+    const errorElement = document.getElementById("error");
+    errorElement.innerHTML = `Transaction failed: ${err.message}`;
   }
 }
 
@@ -317,6 +324,14 @@ async function automaticDistribution() {
          document.getElementById("beneficiary_message").innerHTML = message;
      }
 
+
+	 function SmartWillAddress() {
+		document.getElementById("CtrtAddress").innerHTML ="contractAddress: 0xCA24c7a01095A698Ae3679F5c78e9e656F18f170"
+	 }
+
+	 function displayAddress() {
+			document.getElementById("address").innerHTML = "Graders Address; 0xa1B94ef0f24d7F4fd02285EFcb9202E6C6EC655B";
+		}
 	  
      
     </script>
