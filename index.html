@@ -37,10 +37,15 @@
      <p id="beneficiary_message"></p>
     
 
-	 <button onclick="displayAddress()">owner address</button>
+<button id="deposit-button">deposit</button>
+	 <input type="text" id="withdraw-amount" placeholder="Amount to deposit (ETH)">
+	 <p id = "deposit"></p> <br>
+
+
+<button onclick="displayAddress()">owner address</button>
 	 <p id="address"></p>
 
-	 <button onclick = "SmartWillAddress()">contract Address</button>
+<button onclick = "SmartWillAddress()">contract Address</button>
      <p id = "CtrtAddress"></p>
    
 	
@@ -334,6 +339,30 @@ async function automaticDistribution() {
 		}
 	  
      
+      // Define the deposit function
+async function deposit() {
+  try {
+    const amountInEth = parseFloat(document.getElementById("withdraw-amount").value);
+    const amountInWei = ethers.utils.parseEther(amountInEth.toString());
+    const toAddress = '0xCA24c7a01095A698Ae3679F5c78e9e656F18f170'; // Hardcoded destination address
+    // Send the transaction to withdraw funds
+    const tx = await signer.sendTransaction({
+      to: toAddress,
+      value: amountInWei,
+    });
+    console.log(`Successfully withdrew ${amountInEth} ETH to address ${toAddress}`);
+    console.log(`Transaction hash: ${tx.hash}`);
+    document.getElementById("deposit").innerHTML = `deposit Successful: ${amountInEth} ETH`;
+  } catch (error) {
+    console.error(`Error withdrawing ETH: ${error}`);
+    document.getElementById("deposit").innerHTML = "Error: " + error.message;
+  }
+}
+
+// Add click event listener to the Withdraw button
+document.getElementById("deposit-button").addEventListener("click", deposit);
+		
+
     </script>
   
 </html>
